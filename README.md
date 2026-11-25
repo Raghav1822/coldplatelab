@@ -48,6 +48,8 @@ They verify the reference-point power, flow-squared pressure scaling, density sc
 - `coldplatelab_estimate.m` — validated hydraulic and electrical input estimate.
 - `tests/run_smoke_tests.m` — dependency-free model checks.
 
+To add a concept, add one entry for each field in `coldplatelab_data.m`. Keep the reference pressure drop paired with its reference flow rate, and label any non-measured values as illustrative.
+
 ## Technology
 
 MATLAB desktop UI components only; no JavaScript, web runtime, external services, or add-on toolboxes.
