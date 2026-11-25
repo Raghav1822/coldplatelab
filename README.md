@@ -42,7 +42,7 @@ Then visit `http://localhost:8000`.
 
 ## Deploy
 
-The included GitHub Actions workflow publishes the site to GitHub Pages on pushes to `main`. Enable **Settings → Pages → Build and deployment → GitHub Actions** once for this repository if Pages is not already enabled. Subsequent deployments happen automatically.
+The included GitHub Actions workflow enables and publishes the site to GitHub Pages on pushes to `main`. Subsequent deployments happen automatically.
 
 ## Built with
 
