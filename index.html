@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#081b20">
+    <meta name="description" content="Explore and compare liquid cooling cold-plate geometries, thermal performance, pressure drop, and pumping power.">
+    <title>ColdPlateLab — Liquid Cooling Design Database</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="ColdPlateLab home">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>coldplate<span class="brand-light">lab</span></span>
+        </a>
+        <div class="topbar-right">
+          <span class="dataset-status"><span class="status-dot"></span> MATLAB MODEL <span class="status-divider">/</span> LOOKUP GENERATED</span>
+          <a class="github-link" href="https://github.com/Raghav1822/coldplatelab" target="_blank" rel="noreferrer">SOURCE <span aria-hidden="true">↗</span></a>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span> THERMAL DESIGN EXPLORER</div>
+            <h1>Find the right<br><span class="headline-accent">flow path.</span></h1>
+            <p class="hero-description">A comparative field guide to liquid-cooled cold plates. Explore the balance between thermal uniformity, hydraulic resistance, and the power it takes to keep things cool—with pump estimates generated from the MATLAB engineering model.</p>
+            <div class="hero-meta"><span class="mono">01 — 08</span><span class="meta-rule"></span><span>CONCEPT DESIGNS</span><span class="meta-rule"></span><span>3 GEOMETRIES</span></div>
+          </div>
+          <div class="hero-art" aria-label="Illustration of a liquid cooling channel">
+            <div class="art-caption"><span>FLOW STUDY / 001</span><span>INLET → OUTLET</span></div>
+            <svg class="flow-art" viewBox="0 0 500 290" role="img" aria-label="Serpentine cold plate flow path">
+              <defs>
+                <linearGradient id="plate" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#183a3e"/><stop offset="1" stop-color="#10292e"/></linearGradient>
+                <linearGradient id="flow" x1="0" x2="1"><stop stop-color="#38ddbe"/><stop offset=".52" stop-color="#90e4cf"/><stop offset="1" stop-color="#efba74"/></linearGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <path d="M75 41h351v208H75z" fill="url(#plate)" stroke="#31565a"/>
+              <path d="M75 145H128V78H369V145H128V212H369V145H426" fill="none" stroke="#285458" stroke-width="24" stroke-linejoin="round"/>
+              <path d="M75 145H128V78H369V145H128V212H369V145H426" fill="none" stroke="url(#flow)" stroke-width="3" stroke-linejoin="round" filter="url(#glow)" class="flow-line"/>
+              <path d="M75 145H128V78H369V145H128V212H369V145H426" fill="none" stroke="#baf8ea" stroke-width="1" stroke-dasharray="3 12" stroke-linejoin="round" class="flow-dash"/>
+              <circle cx="75" cy="145" r="7" fill="#38ddbe"/><circle cx="426" cy="145" r="7" fill="#efba74"/>
+              <path d="M93 134l-11 11 11 11m315-22 11 11-11 11" fill="none" stroke="#d7eee6" stroke-width="1.5"/>
+              <text x="76" y="126" class="art-label">IN</text><text x="407" y="126" class="art-label">OUT</text>
+              <text x="125" y="67" class="art-label">SERPENTINE / 3-PASS</text>
+              <path d="M310 232h77" stroke="#4b7775" stroke-dasharray="2 4"/><text x="313" y="244" class="art-scale">SCHEMATIC — NOT TO SCALE</text>
+            </svg>
+            <div class="art-foot"><span>DESIGN NOTE 001</span><span>FLOW IS THE STORY</span></div>
+          </div>
+        </section>
+
+        <section class="metrics-strip" aria-label="Library overview">
+          <div><span class="metric-number">08</span><span class="metric-label">DESIGN CONCEPTS</span></div>
+          <div><span class="metric-number">03</span><span class="metric-label">CHANNEL FAMILIES</span></div>
+          <div><span class="metric-number">04</span><span class="metric-label">APPLICATION AREAS</span></div>
+          <div class="metric-note"><span class="metric-spark">↗</span><span>Compare the trade-offs.<br><b>Not just the peak numbers.</b></span></div>
+        </section>
+
+        <section class="explorer-section" id="explorer">
+          <div class="section-heading">
+            <div><div class="eyebrow"><span class="eyebrow-line"></span> THE DESIGN LIBRARY</div><h2>Explore concepts<span class="heading-period">.</span></h2></div>
+            <div class="library-count"><span id="result-count">8</span> DESIGNS <span class="status-divider">/</span> ILLUSTRATIVE DATA</div>
+          </div>
+
+          <div class="explorer-layout">
+            <aside class="filters" aria-label="Design filters">
+              <div class="filter-label">GEOMETRY</div>
+              <div class="filter-options" id="geometry-filters"></div>
+              <div class="filter-divider"></div>
+              <label class="filter-label" for="application-filter">APPLICATION</label>
+              <select id="application-filter" class="select-control">
+                <option value="all">All applications</option>
+                <option value="CPU">CPU</option><option value="GPU">GPU</option>
+                <option value="Battery">Battery</option><option value="Data center">Data center</option>
+              </select>
+              <div class="filter-divider"></div>
+              <label class="filter-label" for="search-input">FIND A DESIGN</label>
+              <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Name or keyword" autocomplete="off"></div>
+              <div class="filter-foot"><span class="status-dot"></span> INDICATIVE BENCHMARKS</div>
+            </aside>
+
+            <div class="library-main">
+              <div class="library-toolbar">
+                <div class="sort-label">SORT BY <select id="sort-select" aria-label="Sort designs"><option value="balanced">Balanced score</option><option value="thermal">Lowest thermal resistance</option><option value="pressure">Lowest pressure drop</option><option value="uniformity">Best uniformity</option></select></div>
+                <button id="clear-filters" class="text-button" type="button">RESET FILTERS <span aria-hidden="true">↺</span></button>
+              </div>
+              <div class="design-grid" id="design-grid" aria-live="polite"></div>
+              <div class="empty-state" id="empty-state" hidden><span>NO MATCHING CONCEPTS</span><p>Try widening your filters or search terms.</p><button id="empty-reset" type="button" class="text-button">RESET FILTERS ↺</button></div>
+              <div class="compare-dock" id="compare-dock" hidden>
+                <div><span class="dock-kicker">SIDE-BY-SIDE</span><strong id="compare-label">0 designs selected</strong></div>
+                <div class="dock-actions"><button class="text-button" id="clear-compare" type="button">CLEAR</button><button class="compare-button" id="open-compare" type="button">COMPARE <span aria-hidden="true">→</span></button></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" id="detail-section">
+          <div class="detail-topline"><span class="eyebrow"><span class="eyebrow-line"></span> DESIGN DEEP DIVE</span><span class="design-index" id="detail-index">CONCEPT 01 / 08</span></div>
+          <div class="detail-layout" id="detail-content"></div>
+        </section>
+
+        <section class="methodology">
+          <div class="method-icon" aria-hidden="true">i</div>
+          <div><div class="method-title">A useful starting point, not a substitute for testing.</div><p>All values in this explorer are synthetic, illustrative concept-stage inputs. They are here to help compare patterns—not to make product claims or replace validated CFD, bench testing, or engineering judgment. Pumping power shown is ideal hydraulic power only: <span class="formula">ΔP × volumetric flow</span>.</p></div>
+          <a href="https://github.com/Raghav1822/coldplatelab#data-and-model-limitations" target="_blank" rel="noreferrer">HOW TO READ THIS DATA <span aria-hidden="true">↗</span></a>
+        </section>
+      </main>
+
+      <footer class="footer"><a class="brand footer-brand" href="#"><span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span><span>coldplate<span class="brand-light">lab</span></span></a><span>MADE FOR BETTER THERMAL DECISIONS.</span><span>OPEN SOURCE <span class="status-divider">/</span> 2026</span></footer>
+    </div>
+
+    <dialog id="compare-dialog" class="compare-dialog">
+      <div class="dialog-header"><div><div class="eyebrow"><span class="eyebrow-line"></span> SIDE-BY-SIDE</div><h2>Compare designs<span class="heading-period">.</span></h2></div><button class="dialog-close" id="close-compare" aria-label="Close comparison">×</button></div>
+      <div class="compare-table-wrap" id="compare-table"></div>
+      <p class="dialog-note">Indicative concept-stage values; compare trends, not validated product performance.</p>
+    </dialog>
+  </body>
+</html>

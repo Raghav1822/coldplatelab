@@ -1,0 +1,83 @@
+function coldplatelab_export()
+%COLDPLATELAB_EXPORT Generate JSON assets consumed by the static website.
+% Run from MATLAB after changing the design library or estimator model.
+
+root = fileparts(mfilename('fullpath'));
+outputDirectory = fullfile(root,'data');
+if ~exist(outputDirectory,'dir')
+    mkdir(outputDirectory);
+end
+
+designs = coldplatelab_data();
+count = numel(designs);
+template = struct('id','','name','','geometry','','application','', ...
+    'tag','','description','','thermal',0,'pressure',0,'uniformity',0, ...
+    'flow',0,'channels',0,'insight','','pros',{{}},'watch','');
+webDesigns = repmat(template,1,count);
+
+flowRatesLpm = round((0.5:0.1:3.0).*10)./10;
+densitiesKgM3 = 850:50:1200;
+efficienciesPct = 20:5:70;
+lookupTemplate = struct('id','','pressureDropKPa',[],'electricalInputW',[]);
+lookupDesigns = repmat(lookupTemplate,1,count);
+
+for designIndex = 1:count
+    design = designs(designIndex);
+    webDesigns(designIndex) = struct( ...
+        'id',design.ID,'name',design.Name,'geometry',design.Geometry, ...
+        'application',design.Application,'tag',design.Tag, ...
+        'description',design.Description, ...
+        'thermal',design.ThermalResistance, ...
+        'pressure',design.PressureDropKPa, ...
+        'uniformity',design.TemperatureSpreadK, ...
+        'flow',design.ReferenceFlowLpm,'channels',design.ChannelCount, ...
+        'insight',design.Insight, ...
+        'pros',{{design.Strength}},'watch',design.WatchFor);
+
+    pressureGrid = zeros(numel(flowRatesLpm), ...
+        numel(densitiesKgM3),numel(efficienciesPct));
+    electricalGrid = pressureGrid;
+    for flowIndex = 1:numel(flowRatesLpm)
+        for densityIndex = 1:numel(densitiesKgM3)
+            for efficiencyIndex = 1:numel(efficienciesPct)
+                estimate = coldplatelab_estimate(design, ...
+                    flowRatesLpm(flowIndex),densitiesKgM3(densityIndex), ...
+                    efficienciesPct(efficiencyIndex)./100);
+                pressureGrid(flowIndex,densityIndex,efficiencyIndex) = ...
+                    estimate.PressureDropKPa;
+                electricalGrid(flowIndex,densityIndex,efficiencyIndex) = ...
+                    estimate.ElectricalInputW;
+            end
+        end
+    end
+    lookupDesigns(designIndex) = struct( ...
+        'id',design.ID, ...
+        'pressureDropKPa',reshape(pressureGrid,1,[]), ...
+        'electricalInputW',reshape(electricalGrid,1,[]));
+end
+
+lookup = struct( ...
+    'flowRatesLpm',flowRatesLpm, ...
+    'densitiesKgM3',densitiesKgM3, ...
+    'efficienciesPct',efficienciesPct, ...
+    'designs',lookupDesigns);
+
+writeJson(fullfile(outputDirectory,'designs.json'),webDesigns);
+writeJson(fullfile(outputDirectory,'pump-estimates.json'),lookup);
+fprintf('Generated MATLAB website data in %s\n',outputDirectory);
+end
+
+function writeJson(filePath,value)
+fileID = fopen(filePath,'w','n','UTF-8');
+if fileID < 0
+    error('ColdPlateLab:FileOpenFailed', ...
+        'Could not open generated data file: %s',filePath);
+end
+closeFile = onCleanup(@() fclose(fileID));
+written = fwrite(fileID,jsonencode(value),'char');
+if written <= 0
+    error('ColdPlateLab:FileWriteFailed', ...
+        'Could not write generated data file: %s',filePath);
+end
+clear closeFile
+end
