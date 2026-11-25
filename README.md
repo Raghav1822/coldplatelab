@@ -1,50 +1,53 @@
 # ColdPlateLab
 
-**A decision-support explorer for liquid-cooled cold-plate designs.**
+ColdPlateLab is a MATLAB desktop explorer for comparing conceptual liquid-cooling cold plates across CPU, GPU, battery, and data-center use cases.
 
-ColdPlateLab makes the trade-offs between cold-plate geometries easier to explore. Browse a curated library of serpentine, parallel-channel, and pin-fin concepts; filter by application; compare hydraulic and thermal indicators; and estimate pumping power from a selected operating point.
+## Launch
 
-## Live demo
+Requires MATLAB with `uifigure`, `uigridlayout`, `uitable`, and `uiaxes` support (MATLAB R2020a or newer recommended). No add-on toolboxes are required.
 
-Once GitHub Pages finishes its first deployment, the site is available at:
+1. Download or clone this repository.
+2. In MATLAB, set the current folder to the repository root.
+3. Run:
 
-**https://raghav1822.github.io/coldplatelab/**
+   ```matlab
+   coldplatelab
+   ```
 
-## What it does
+Use the geometry, application, and text filters to explore the library. Sort designs by the three engineering indicators or an equal-weight balanced score. Select designs using the table's **Compare** column, then open a side-by-side comparison. Choose a design to view its schematic and adjust flow, coolant density, and pump efficiency in the estimator.
 
-- Search and filter concepts by geometry and target application.
-- Compare pressure drop, thermal resistance, temperature spread, and flow side by side.
-- Select a design to inspect its flow-path illustration and engineering notes.
-- Adjust flow rate and fluid density to see the ideal hydraulic pumping-power estimate update.
-- View responsive layouts designed for desktop and mobile.
+## Engineering model and limitations
 
-## Important: data and model limitations
+The eight built-in entries are **synthetic, illustrative concept-stage inputs**, not measured product specifications or validated simulation results. They are intended to demonstrate comparative workflows—not predict hardware performance or guide a safety-critical design.
 
-The library is a **concept-stage, illustrative dataset**, not a collection of measured or validated product specifications. Values are synthetic, representative inputs intended to demonstrate comparative workflows—not to predict hardware performance or guide a safety-critical design. Real performance depends on geometry, manufacturing tolerances, material properties, coolant, boundary conditions, instrumentation, and test procedure.
-
-Pumping power is calculated as:
+At each design's reference point, pressure drop is scaled using:
 
 ```text
-P_hydraulic [W] = pressure_drop [Pa] × flow_rate [m³/s]
+deltaP = referenceDeltaP * (flow / referenceFlow)^2 * (coolantDensity / 997 kg/m^3)
+hydraulicPower = deltaP * volumetricFlow
+estimatedElectricalInput = hydraulicPower / pumpEfficiency
 ```
 
-This is ideal hydraulic power only. Electrical input will be higher because of pump and system efficiency, and the displayed pressure drop does not include external plumbing losses.
+This simplified scaling is not a substitute for CFD, pressure-drop measurements, detailed coolant-property models, or pump curves. Estimates exclude external plumbing losses, and the temperature spread and thermal resistance are illustrative library values that do not change with the pump controls.
 
-## Run locally
+## Run the calculation checks
 
-No build step or external dependency is required. Open `index.html` in a browser, or serve this directory with any static file server:
+The calculation smoke tests require MATLAB but no toolbox:
 
-```sh
-python3 -m http.server 8000
+```matlab
+addpath('tests')
+run_smoke_tests
 ```
 
-Then visit `http://localhost:8000`.
+They verify the reference-point power, flow-squared pressure scaling, density scaling, and invalid-input handling.
 
-## Deploy
+## Project files
 
-Enable **Settings → Pages → Build and deployment → GitHub Actions** once for this repository. The included GitHub Actions workflow publishes the site on pushes to `main` and can be run manually from the Actions tab.
+- `coldplatelab.m` — native MATLAB UI, filtering, comparison, and schematic.
+- `coldplatelab_data.m` — illustrative design library.
+- `coldplatelab_estimate.m` — validated hydraulic and electrical input estimate.
+- `tests/run_smoke_tests.m` — dependency-free model checks.
 
-## Built with
+## Technology
 
-HTML, CSS, vanilla JavaScript, and GitHub Pages. No frameworks, tracking, or external runtime dependencies.
-ColdPlateLab — comparative liquid cooling design database and engineering explorer
+MATLAB desktop UI components only; no JavaScript, web runtime, external services, or add-on toolboxes.
